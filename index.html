@@ -221,6 +221,20 @@
             --r-hover: -1deg;
         }
 
+        /* New Card Style for Speech Generator */
+        #speech-draft-card {
+            background: linear-gradient(145deg, #e0f2fe, #bfdbfe); /* Light Blue for Speech */
+            border-color: #1d4ed8;
+            --r-hover: 1deg;
+        }
+
+        /* New Card Style for Nostalgia Tags */
+        #nostalgia-tag-card {
+            background: linear-gradient(145deg, #fff3e0, #ffe0b2); /* Light Orange/Cream */
+            border-color: #ff9800;
+            --r-hover: -1deg;
+        }
+
         /* Cover Page Styling and Transition */
         #page-1 {
             background: linear-gradient(to bottom right, #C39BEB, #FF69B4);
@@ -390,6 +404,34 @@
             </div>
         </div>
 
+        <!-- BIRTHDAY SPEECH GENERATOR (Gemini Feature 7: NEW) -->
+        <div id="speech-draft-card" class="scrapbook-card transform rotate-1 p-6 shadow-xl border-dashed border-2">
+            <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center justify-center">
+                🎙️ ✨ Birthday Speech Draft Generator
+            </h2>
+            <input 
+                type="text" 
+                id="speech-relationship" 
+                placeholder="Your relationship (e.g., Brother, Best Friend, Cousin)"
+                class="w-full p-3 rounded-lg border-2 border-blue-500/50 focus:border-blue-500 focus:ring-0 text-gray-700 mb-2"
+            >
+            <textarea 
+                id="speech-theme" 
+                placeholder="Main theme/memory for the speech (e.g., 'Her recent graduation' or 'Travel adventures')."
+                class="w-full p-3 h-12 rounded-lg border-2 border-blue-500/50 focus:border-blue-500 focus:ring-0 text-gray-700 mb-4"
+            ></textarea>
+            <button 
+                id="generate-speech-btn"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 flex items-center justify-center disabled:opacity-50 mx-auto mb-4"
+                onclick="generateSpeechDraft()"
+            >
+                <span id="speech-button-content">📝 Draft My Toast</span>
+            </button>
+            <div id="speech-results" class="text-left space-y-3 p-4 bg-white rounded-xl shadow-inner min-h-[50px]">
+                <p class="text-sm text-gray-500">Generate a short, structured speech to use at the party!</p>
+            </div>
+        </div>
+
         <!-- INTERACTIVE FEATURES SECTION (Cake, Pop, New Buttons) -->
         <div class="scrapbook-card bg-white p-6 shadow-xl border-soft-purple border-solid border-4">
             <h3 class="text-xl font-bold text-primary-pink mb-4">Interactive Celebrations! 🥳</h3>
@@ -520,6 +562,28 @@
                 <p class="text-sm text-gray-500">Tap '📖 Expand Memory' to turn a joke into a story idea!</p>
             </div>
         </div>
+
+        <!-- NOSTALGIA TAG GENERATOR (Gemini Feature 8: NEW) -->
+        <div id="nostalgia-tag-card" class="scrapbook-card transform rotate-2 p-6 shadow-xl border-dashed border-2">
+            <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center justify-center">
+                ✨ Nostalgia Tag Generator
+            </h2>
+            <textarea 
+                id="nostalgia-event" 
+                placeholder="Describe a funny or memorable past event (e.g., 'That camping trip where our tent flooded')."
+                class="w-full p-3 h-16 rounded-lg border-2 border-orange-500/50 focus:border-orange-500 focus:ring-0 text-gray-700 mb-4"
+            ></textarea>
+            <button 
+                id="generate-tags-btn"
+                class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 flex items-center justify-center disabled:opacity-50 mx-auto mb-4"
+                onclick="generateNostalgiaTags()"
+            >
+                <span id="tags-button-content">🏷️ Generate Tags</span>
+            </button>
+            <div id="tags-results" class="text-left space-y-3 p-4 bg-white rounded-xl shadow-inner min-h-[50px]">
+                <p class="text-sm text-gray-500">Get a headline and hashtags for your throwback photos!</p>
+            </div>
+        </div>
         
         <!-- SIGNATURE/DRAWING PAD SECTION (New Feature 4) -->
         <div class="scrapbook-card bg-pink-100/70 transform -rotate-2 p-6 shadow-xl border-dashed border-2 border-primary-pink">
@@ -614,8 +678,9 @@
     <!-- JavaScript for Confetti and Gemini API Features -->
     <script>
         // --- Global Variables and DOM Elements ---
-        const apiKey = "";
-        
+        const apiKey = ""; 
+        let audioContextStarted = false; 
+
         // References for the LLM features
         const poemBtn = document.getElementById('generate-poem-btn');
         const poemBtnContent = document.getElementById('poem-button-content');
@@ -666,6 +731,20 @@
         const greetingBtnContent = document.getElementById('greeting-button-content');
         const greetingResultsDiv = document.getElementById('greeting-results');
 
+        // References for Speech Generator (Feature 7)
+        const speechRelationshipInput = document.getElementById('speech-relationship');
+        const speechThemeTextarea = document.getElementById('speech-theme');
+        const generateSpeechBtn = document.getElementById('generate-speech-btn');
+        const speechBtnContent = document.getElementById('speech-button-content');
+        const speechResultsDiv = document.getElementById('speech-results');
+
+        // References for Nostalgia Tags (Feature 8: NEW)
+        const nostalgiaEventTextarea = document.getElementById('nostalgia-event');
+        const generateTagsBtn = document.getElementById('generate-tags-btn');
+        const tagsBtnContent = document.getElementById('tags-button-content');
+        const tagsResultsDiv = document.getElementById('tags-results');
+
+
         // References for Countdown (Feature C)
         const countdownDiv = document.getElementById('countdown');
         
@@ -709,9 +788,23 @@
             console.warn("Tone.js initialization failed. Audio features disabled.", e);
         }
         
+        // --- TONE.JS AUDIO INITIALIZATION FIX ---
+        // Browsers require a direct user interaction to start the AudioContext.
+        function startAudioContext() {
+            if (!audioContextStarted) {
+                Tone.start();
+                audioContextStarted = true;
+                console.log("Tone.js Audio Context started via user interaction.");
+            }
+        }
+        
+        // Add a global listener to guarantee Tone.start() on first click
+        document.body.addEventListener('click', startAudioContext, { once: true });
+
+
         // --- THREE.js SETUP (Feature A: Enhanced) ---
         
-        const initThreeJs = () => {
+        function initThreeJs() {
             const container = document.getElementById('three-container');
             if (!container) return;
 
@@ -759,14 +852,14 @@
             window.addEventListener('resize', onWindowResizeThreeJs);
 
             animateThreeJs();
-        };
+        }
         
-        const onDocumentMouseMove = (event) => {
+        function onDocumentMouseMove(event) {
             mouseX = (event.clientX / window.innerWidth) * 2 - 1;
             mouseY = (event.clientY / window.innerHeight) * 2 - 1;
-        };
+        }
 
-        const animateThreeJs = () => {
+        function animateThreeJs() {
             requestAnimationFrame(animateThreeJs);
 
             // Update camera rotation based on mouse and auto-orbit
@@ -789,18 +882,18 @@
             });
             
             renderer.render(scene, camera);
-        };
+        }
 
-        const onWindowResizeThreeJs = () => {
+        function onWindowResizeThreeJs() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-        };
+        }
 
         // --- COUNTDOWN TIMER (Feature C) ---
 
-        const updateCountdown = () => {
-            // FIX 3: Set target date to October 8, 2025
+        function updateCountdown() {
+            // Target date is October 8, 2025
             const targetDate = new Date("October 8, 2025 00:00:00").getTime();
             
             const now = new Date().getTime();
@@ -834,8 +927,8 @@
                 </div>
                 <p class="text-xs font-normal text-gray-700 mt-2">Time until the next big celebration!</p>
             `;
-        };
-        
+        }
+
         // --- CATCH THE PRESENTS GAME (Feature B) ---
 
         function initGame() {
@@ -858,7 +951,7 @@
             
              // Clear game state
              gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-        };
+        }
 
         function endGame() {
             game.isRunning = false;
@@ -870,7 +963,7 @@
                 Tone.start();
                 synth.triggerAttackRelease("C3", "4n"); // Low tone for game over
             }
-        };
+        }
 
         function createPresent() {
             const emojis = ['🎁', '🎂', '💖', '🎈'];
@@ -881,11 +974,15 @@
                 size: 20,
                 speed: Math.random() * 2 + 1,
             });
-        };
+        }
 
-        // FIX 2: This function is now correctly attached in window.onload for immediate responsiveness.
         function handleGameInput(e) {
             if (!game.isRunning) return;
+            
+            // Only prevent default on the keys used for the game
+            if (['ArrowLeft', 'ArrowRight', 'a', 'd'].includes(e.key.toLowerCase())) {
+                e.preventDefault();
+            }
             
             // Move left
             if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
@@ -901,7 +998,7 @@
             if (game.player.x > gameCanvas.width - game.player.width) {
                 game.player.x = gameCanvas.width - game.player.width;
             }
-        };
+        }
 
         function updateGame() {
             if (!game.isRunning) return;
@@ -931,7 +1028,7 @@
                     endGame(); // Game over on first miss
                 }
             });
-        };
+        }
 
         function drawGame() {
             if (!gameCtx) return;
@@ -952,12 +1049,12 @@
                 gameCtx.font = `${present.size}px Arial`;
                 gameCtx.fillText(present.emoji, present.x, present.y);
             });
-        };
+        }
 
         function gameLoop() {
             updateGame();
             drawGame();
-        };
+        }
 
 
         // --- Utility Functions (API, Confetti, etc.) ---
@@ -966,7 +1063,95 @@
             '🎉', '🎈', '🍾', '🥂', '🌸', '🌼', '✨', '💖', '🎁', '🎂'
         ];
         
-        const apiFetchWithBackoff = async (url, payload, maxRetries = 5) => {
+        // --- MOCK API FUNCTION FOR GITHUB DEPLOYMENT ---
+        async function mockApiFetch(feature, input, context) {
+            await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
+            
+            if (feature === 'poem') {
+                return { generatedText: `Dear Tanu Di, on this day of light,<br>May every wish you hold take flight.<br>With laughter shared and memories bright,<br>Shine on, today and through the night!` };
+            } else if (feature === 'greeting') {
+                if (input.includes('Silly')) {
+                    return { generatedText: `Happy Birthday! You're officially one year closer to becoming a crazy cat lady. Remember all those years I took the blame for things you did? Consider that that your gift this year. Love you, even when you steal my snacks!` };
+                } else if (input.includes('Sentimental')) {
+                    return { generatedText: `Thank you for being the unwavering anchor in my life. Every difficult moment was easier because you were there to listen and guide me. I cherish our bond more than words can say. Wishing my amazing Di the most beautiful birthday.` };
+                } else {
+                    return { generatedText: `Happy Birthday to the one and only, Tanu Di! Here’s to celebrating the wonderful, brilliant person you are. May your year be filled with success, joy, and zero percent stress. You deserve the best!` };
+                }
+            } else if (feature === 'memory') {
+                const memory = input || "that one embarrassing moment";
+                return { generatedText: `Ah, the legend of "${memory}"! It started simple, but quickly escalated into family lore. Now, years later, every time we talk about it, we're reduced to tears of laughter. It's those ridiculous, unscripted moments that truly define us, isn't it? Here's to many more stories that nobody else will ever understand.` };
+            } else if (feature === 'gift') {
+                // Returns JSON array structured as a string
+                return { generatedText: JSON.stringify([
+                    { idea: `Custom ${input.split(',')[0] || 'Coffee'} Roasting Kit`, description: "A DIY kit to blend and roast unique coffee beans at home.", category: "Hobby/DIY" },
+                    { idea: "Guided Nature Photography Tour", description: "An outdoor experience focused on capturing local flora and fauna.", category: "Experience" },
+                    { idea: "Sci-Fi Book Club Subscription", description: "A monthly delivery of curated sci-Fi novels and discussion prompts.", category: "Books/Leisure" }
+                ])};
+            } else if (feature === 'image') {
+                // Placeholder image URL for mock generation
+                const imageUrl = 'https://placehold.co/400x300/FF69B4/FFFFFF?text=Custom+AI+Card';
+                return { predictions: [{ bytesBase64Encoded: imageUrl }] };
+            } else if (feature === 'speech') {
+                return { generatedText: `**(Opening)** Hello everyone, thank you for being here to celebrate the one and only Tanu Di! As her ${input.split(',')[0] || 'sibling'}, I've had a front-row seat to her amazing life.<br><br>**(Main Point)** Thinking about all our ${input.split(',')[1] || 'travel adventures'}, the one memory that stands out is... *\[Insert specific story here\]*. That time perfectly sums up her spirit: adventurous, resilient, and always ready for a laugh.<br><br>**(Toast)** So please raise your glasses with me! To Tanu Di: May your next trip be even better, your next achievement bigger, and your happiness endless. Happy Birthday! We love you!` };
+            } else if (feature === 'tags') {
+                // Returns JSON array structured as a string
+                return { generatedText: JSON.stringify({
+                    headline: "That Time We Conquered the Rain (and almost starved)",
+                    tags: ["AdventureDiaries", "SiblingChaos", "NeverAgain", "WorthIt", "TanuDiBirthday"]
+                })};
+            }
+        }
+        // --- END MOCK API FUNCTION ---
+
+        
+        // --- API FETCH LOGIC (LIVE + FALLBACK) ---
+        async function apiFetchWithBackoff(url, payload, maxRetries = 5) {
+             // Use MOCK API if key is missing (for GitHub deploy or testing)
+            if (!apiKey || (typeof __app_id === 'undefined')) {
+                // FIX: Determine feature based on system prompt content for reliable mock routing
+                let feature = 'poem'; 
+                const systemPrompt = payload.systemInstruction?.parts[0]?.text || '';
+                const isImage = url.includes('imagen-3.0');
+
+                if (isImage) {
+                    feature = 'image';
+                } else if (systemPrompt.includes('poet')) {
+                    feature = 'poem';
+                } else if (systemPrompt.includes('gift curator')) {
+                    feature = 'gift';
+                } else if (systemPrompt.includes('storyteller')) {
+                    feature = 'memory';
+                } else if (systemPrompt.includes('birthday message')) {
+                    feature = 'greeting';
+                } else if (systemPrompt.includes('speechwriter')) {
+                    feature = 'speech';
+                } else if (systemPrompt.includes('social media manager')) {
+                    feature = 'tags';
+                }
+                
+                // Determine if a JSON response is expected (for structured features)
+                const isStructured = payload.generationConfig && payload.generationConfig.responseMimeType === "application/json";
+                
+                let input = '';
+                if (payload.contents && payload.contents[0].parts && payload.contents[0].parts[0]) {
+                    input = payload.contents[0].parts[0].text;
+                }
+                
+                const mockResult = await mockApiFetch(feature, input);
+
+                if (isImage) {
+                    return mockResult;
+                }
+                
+                // Ensure the structured JSON mock data is correctly returned as text content
+                if (isStructured) {
+                    return { candidates: [{ content: { parts: [{ text: mockResult.generatedText }] } }] };
+                } else {
+                    return { candidates: [{ content: { parts: [{ text: mockResult.generatedText }] } }] };
+                }
+            }
+            
+            // --- LIVE API CALLS ---
             for (let i = 0; i < maxRetries; i++) {
                 try {
                     const response = await fetch(url, {
@@ -982,16 +1167,19 @@
                     }
                     
                     if (!response.ok) {
-                        throw new Error(`API error: ${response.statusText}`);
+                        const errorText = await response.text();
+                        throw new Error(`API error: ${response.status} - ${errorText.substring(0, 50)}...`);
                     }
 
                     return response.json();
                 } catch (error) {
                     console.error('Fetch error:', error);
-                    if (i === maxRetries - 1) throw error;
+                    if (i === maxRetries - 1) {
+                         throw new Error(`Failed to fetch from API after ${maxRetries} attempts. Issue: ${error.message}`);
+                    }
                 }
             }
-        };
+        }
         
         function openScrapbook() { 
              body.classList.add('scrapbook-open');
@@ -1009,7 +1197,6 @@
 
             // Central starting position for the explosion
             const startX = window.innerWidth / 2;
-            // Start the explosion slightly above the visible content (relative to the scroll position)
             const startY = window.scrollY + window.innerHeight * 0.2; 
 
             for (let i = 0; i < 150; i++) { 
@@ -1037,7 +1224,6 @@
 
                     // Use transition for the burst effect
                     popConfetti.style.transform = `translate(0, 0)`;
-                    // Adjust the transition timing function for a dramatic burst (starts fast, slows down)
                     popConfetti.style.transition = `transform ${Math.random() * 1.5 + 0.8}s cubic-bezier(0.1, 0.9, 0.4, 1.2), opacity 0.5s linear ${Math.random() * 1.0}s`;
                     
                     setTimeout(() => {
@@ -1104,12 +1290,12 @@
             }
         };
 
-        function createConfetti(isPop = false) { 
+        function createConfetti() { 
             const confetti = document.createElement('div');
             confetti.classList.add('confetti');
             
             const assetType = Math.random();
-            if (assetType < 0.3 && !isPop) { 
+            if (assetType < 0.3) { 
                 confetti.textContent = EMOJI_ASSETS[Math.floor(Math.random() * EMOJI_ASSETS.length)];
                 confetti.style.backgroundColor = 'transparent';
                 confetti.style.width = '24px';
@@ -1206,9 +1392,8 @@
                 systemInstruction: { parts: [{ text: systemPrompt }] },
             };
 
-            try {
-                // Using synchronous try/catch logic, but API call is async. Wrapped in a temporary function to maintain structure.
-                (async () => {
+            (async () => {
+                try {
                     const result = await apiFetchWithBackoff(apiUrl, payload);
                     const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
                     
@@ -1224,22 +1409,16 @@
                     } else {
                         poemResultText.textContent = "Oops! Couldn't generate a poem right now.";
                     }
-                })().catch(error => {
+                } catch (error) {
                     console.error("Gemini Poem Generation Failed:", error);
-                    poemResultText.textContent = "Error generating the poem. Please check the console for details.";
-                }).finally(() => {
+                    poemResultText.innerHTML = `<span class="text-red-500">Error: ${error.message}</span>`;
+                } finally {
                     poemBtnContent.textContent = '✨ Generate New Poem';
                     poemBtn.disabled = false;
-                });
-
-            } catch (error) {
-                // This catch block will only catch synchronous errors before the async IIFE runs
-                console.error("Synchronous error during poem generation setup:", error);
-                poemBtnContent.textContent = '✨ Generate New Poem';
-                poemBtn.disabled = false;
-            }
+                }
+            })();
         };
-        
+
         // --- LLM Gift Idea Generation Feature (Gemini Feature 2) ---
 
         const giftSchema = {
@@ -1424,8 +1603,131 @@
                 }
             })();
         };
+        
+        // --- LLM Speech Draft Generator (Gemini Feature 7: NEW) ---
+
+        function generateSpeechDraft() {
+            const relationship = speechRelationshipInput.value.trim();
+            const theme = speechThemeTextarea.value.trim();
+
+            if (!relationship || !theme) {
+                speechResultsDiv.innerHTML = '<p class="text-sm text-red-500">Please fill in both relationship and theme/memory fields!</p>';
+                return;
+            }
+
+            generateSpeechBtn.disabled = true;
+            speechBtnContent.innerHTML = '<div class="spinner"></div>';
+            speechResultsDiv.innerHTML = '<p class="text-center text-gray-500">Drafting a memorable toast...</p>';
+
+            const model = 'gemini-2.5-flash-preview-05-20';
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+            const systemPrompt = "You are a professional speechwriter for a family gathering. Draft a short, three-part birthday speech (Opening/Welcome, Main Point/Story, and Toast) for a sister named Tanu. Use placeholders like \[Tanu's Name] and structure the output clearly with bold HTML tags.";
+            
+            const userQuery = `Draft a short birthday speech. The speaker is Tanu's ${relationship}, and the main theme is "${theme}".`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+            };
+
+            (async () => {
+                try {
+                    const result = await apiFetchWithBackoff(apiUrl, payload);
+                    const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    
+                    if (generatedText) {
+                        speechResultsDiv.innerHTML = `<div class="text-gray-700 whitespace-pre-wrap">${generatedText.trim()}</div>`;
+                        if (synth) {
+                            Tone.start();
+                            synth.triggerAttackRelease("A4", "8n");
+                        }
+                    } else {
+                        speechResultsDiv.innerHTML = '<p class="text-sm text-red-500">Could not generate the speech. Try simplifying the theme.</p>';
+                    }
+                } catch (error) {
+                    console.error("Gemini Speech Generation Failed:", error);
+                    speechResultsDiv.innerHTML = '<p class="text-sm text-red-500">Error drafting speech. See console for details.</p>';
+                } finally {
+                    speechBtnContent.textContent = '📝 Draft My Toast';
+                    generateSpeechBtn.disabled = false;
+                }
+            })();
+        };
+
+        // --- LLM Nostalgia Tag Generator (Gemini Feature 8: NEW) ---
+        
+        const tagsSchema = {
+            type: "OBJECT",
+            properties: {
+                "headline": { "type": "STRING", "description": "A short, catchy, nostalgic headline for social media." },
+                "tags": {
+                    "type": "ARRAY",
+                    "description": "A list of 3-5 relevant, nostalgic hashtags.",
+                    "items": { "type": "STRING" }
+                }
+            },
+            "propertyOrdering": ["headline", "tags"]
+        };
 
 
+        function generateNostalgiaTags() {
+            const eventDesc = nostalgiaEventTextarea.value.trim();
+
+            if (!eventDesc) {
+                tagsResultsDiv.innerHTML = '<p class="text-sm text-red-500">Please describe an event!</p>';
+                return;
+            }
+
+            generateTagsBtn.disabled = true;
+            tagsBtnContent.innerHTML = '<div class="spinner"></div>';
+            tagsResultsDiv.innerHTML = '<p class="text-center text-gray-500">Generating tags and headline...</p>';
+
+            const model = 'gemini-2.5-flash-preview-05-20';
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+            const systemPrompt = "You are a social media manager specializing in nostalgic family content. Generate a catchy headline and 3-5 hashtags (without the # symbol, only the text) for a throwback photo of a sister named Tanu, based on the provided event description. Respond only with a JSON object conforming to the provided schema.";
+            
+            const userQuery = `Generate a headline and hashtags for a throwback photo based on this event: "${eventDesc}"`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: tagsSchema
+                }
+            };
+
+            (async () => {
+                try {
+                    const result = await apiFetchWithBackoff(apiUrl, payload);
+                    const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    
+                    if (jsonText) {
+                        const tagData = JSON.parse(jsonText);
+                        
+                        const tagsHtml = tagData.tags.map(tag => 
+                            `<span class="inline-block bg-orange-200 text-orange-800 text-xs font-semibold px-3 py-1 rounded-full mr-2 mb-2">#${tag}</span>`
+                        ).join('');
+
+                        tagsResultsDiv.innerHTML = `
+                            <p class="font-bold text-lg text-gray-800 mb-2">${tagData.headline}</p>
+                            <div class="flex flex-wrap">${tagsHtml}</div>
+                        `;
+                    } else {
+                        tagsResultsDiv.innerHTML = '<p class="text-sm text-red-500">Could not generate tags. Try a shorter description.</p>';
+                    }
+                } catch (error) {
+                    console.error("Gemini Tag Generation Failed:", error);
+                    tagsResultsDiv.innerHTML = '<p class="text-sm text-red-500">Error generating tags. See console for details.</p>';
+                } finally {
+                    tagsBtnContent.textContent = '🏷️ Generate Tags';
+                    generateTagsBtn.disabled = false;
+                }
+            })();
+        };
+        
         // --- LLM Image Generation Feature (Gemini Feature 5) ---
 
         function generateBirthdayCard() {
@@ -1479,7 +1781,6 @@
             if (!canvas || !ctx) return;
             const rect = canvas.parentElement.getBoundingClientRect();
             
-            // FIX 1: Add check for zero width to prevent IndexSizeError
             if (rect.width === 0) {
                 console.warn("Canvas container width is zero, skipping resize.");
                 return;
