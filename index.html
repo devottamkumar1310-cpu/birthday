@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, Tanu Di! 🎉</title>
+    <!-- Load Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Calligraphic Font (Sacramento) -->
+    <link href="https://fonts.googleapis.com/css2?family=Sacramento&display=swap" rel="stylesheet">
+    <!-- Load Tone.js for sound effects -->
+    <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
+    <!-- Load Three.js for 3D elements -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        /* --- General Animations and Base Styles --- */
+        
+        /* New Calligraphic Font Class with Sacramento and Deep Shadow */
+        .calligraphic-text {
+            font-family: 'Sacramento', cursive; /* Script font for clarity */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4); 
+            line-height: 1.2;
+        }
+        
+        @keyframes fall {
+            0% { transform: translate(0, -100px) rotateZ(0); opacity: 1; }
+            100% { transform: translate(var(--x), 100vh) rotateZ(var(--r)); opacity: 0.8; }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--c); 
+            animation: fall var(--d) linear infinite; 
+            border-radius: 2px;
+            pointer-events: none;
+            z-index: 1000;
+            font-size: 16px; 
+            line-height: 1;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Animated Night Sky Background */
+            background: linear-gradient(to top, #0d0c1d 0%, #1c1a3a 70%, #2a2552 100%);
+            overflow-y: scroll; /* Scroll for content */
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            position: relative;
+            min-height: 100vh;
+            color: white; /* Default text color for the background */
+        }
+        
+        /* --- DYNAMIC MULTI-LAYER STARFIELD (High-Tech Aesthetic) --- */
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        /* Keyframes for simulating movement/zoom (star travel) */
+        @keyframes star-move {
+            0% { 
+                transform: translate(-50%, -50%) perspective(400px) translateZ(0); 
+                opacity: 0.1;
+            }
+            100% { 
+                transform: translate(-50%, -50%) perspective(400px) translateZ(1000px); 
+                opacity: 0.9;
+            } 
+        }
+
+        /* Base style for star layers */
+        .stars-layer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 2px;
+            height: 2px;
+            background: transparent;
+            /* Using different duration to create parallax effect (motion + zoom) */
+            animation: var(--d) linear infinite;
+        }
+        
+        /* Layer 1: Farthest, slowest, smallest */
+        .stars-small {
+            box-shadow: 
+                50vw 50vh #888, 150vw 100vh #888, 250vw 200vh #888, 350vw 300vh #888, 450vw 400vh #888,
+                550vw 150vh #888, 650vw 350vh #888, 750vw 50vh #888, 850vw 250vh #888, 950vw 450vh #888;
+            --d: 60s;
+            animation-name: star-move;
+        }
+
+        /* Layer 2: Medium speed and size */
+        .stars-medium {
+            box-shadow: 
+                50px 250px #ccc, 350px 400px #ccc, 550px 50px #ccc, 750px 350px #ccc, 900px 150px #ccc, 
+                1150px 450px #ccc, 1350px 200px #ccc, 150px 400px #ccc, 250px 50px #ccc, 1000px 100px #ccc;
+            --d: 40s;
+            transform: scale(1.5);
+            animation-name: star-move;
+        }
+        
+        /* Layer 3: Closest, fastest, largest */
+        .stars-large {
+            box-shadow: 
+                100px 150px #fff, 200px 300px #fff, 400px 100px #fff, 500px 500px #fff, 650px 250px #fff, 
+                800px 450px #fff, 950px 150px #fff, 1100px 350px #fff, 1300px 50px #fff, 1450px 300px #fff; 
+            --d: 20s;
+            filter: blur(1px);
+            transform: scale(2);
+            animation-name: star-move;
+        }
+        
+        
+        /* --- Feature UI Styles (Spinner, Cake, Scrapbook) --- */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #FF69B4;
+            border-radius: 50%;
+            width: 1.5rem;
+            height: 1.5rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .flame {
+            width: 8px;
+            height: 16px;
+            background: radial-gradient(circle at 50% 10%, yellow, orange 50%, transparent 70%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 5px 3px rgba(255, 165, 0, 0.7);
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { transform: translateX(-50%) scaleY(1); opacity: 1; }
+            to { transform: translateX(-50%) scaleY(1.1) translateY(-1px); opacity: 0.9; }
+        }
+        
+        /* Enhanced Scrapbook Card Styling */
+        .scrapbook-card {
+            max-width: 480px;
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 15px 30px -8px rgba(0, 0, 0, 0.6), 0 8px 15px -4px rgba(0, 0, 0, 0.3); 
+            border: 6px dashed;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease-in-out;
+            color: #333; 
+            cursor: default;
+        }
+        
+        .scrapbook-card:hover {
+            transform: scale(1.02) rotate(var(--r-hover, 0deg));
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Individual Card Color Themes (Unchanged) */
+        #message-card-1 {
+            background: linear-gradient(145deg, #fceb9e, #ffd85d);
+            border-color: #FF7043;
+            --r-hover: 1deg; 
+        }
+        #message-card-2 {
+            background: linear-gradient(145deg, #FFC0CB, #FF69B4);
+            border-color: #8A2BE2;
+            --r-hover: -1deg;
+        }
+        #message-card-3 {
+            background: linear-gradient(145deg, #B3E5FC, #4FC3F7);
+            border-color: #4CAF50;
+            --r-hover: 2deg;
+        }
+        #message-card-4 {
+            background: linear-gradient(145deg, #C8E6C9, #81C784);
+            border-color: #FFD700;
+            --r-hover: -2deg;
+        }
+        #message-card-5 {
+            background: linear-gradient(145deg, #E1BEE7, #BA68C8);
+            border-color: #FF4500;
+            --r-hover: 1deg;
+        }
+        
+        /* New Card Style for Memory Extender */
+        #memory-card-extender {
+            background: linear-gradient(145deg, #FAD7A1, #FFB6C1); /* Peach/Light Pink */
+            border-color: #F06292;
+            --r-hover: 0deg;
+        }
+
+        /* New Card Style for Image Generator */
+        #ai-card-generator {
+            background: linear-gradient(145deg, #CFDEF3, #E2E2E2); /* Light Blue/Gray */
+            border-color: #4285F4;
+            --r-hover: 1deg;
+        }
+
+        /* New Card Style for Mood-Based Greeting */
+        #mood-greeting-card {
+            background: linear-gradient(145deg, #FDFCFB, #D0E4F9); /* Cream/Light Blue */
+            border-color: #A0D468;
+            --r-hover: -1deg;
+        }
+
+        /* Cover Page Styling and Transition */
+        #page-1 {
+            background: linear-gradient(to bottom right, #C39BEB, #FF69B4);
+            transition: all 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            opacity: 1;
+        }
+        
+        .scrapbook-open #page-1 {
+            opacity: 0;
+            transform: translateY(-100vh) scale(0.8);
+            pointer-events: none;
+        }
+
+        .scrapbook-open #main-content-scroll {
+            display: block !important;
+        }
+
+        /* Balloon Animation */
+        @keyframes rise {
+            0% { transform: translateY(0) rotateZ(var(--r)); opacity: 1; }
+            100% { transform: translateY(-100vh) rotateZ(var(--r)); opacity: 0; }
+        }
+
+        .balloon {
+            position: fixed;
+            bottom: -50px; 
+            pointer-events: none;
+            animation: rise var(--d) linear forwards;
+            font-size: 32px;
+            z-index: 100;
+        }
+
+        /* Sticker Drop/Pop Animation */
+        @keyframes sticker-pop {
+            0% { transform: scale(0) rotate(0deg); opacity: 0; }
+            80% { transform: scale(1.3) rotate(15deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .sticker {
+            position: fixed;
+            z-index: 1000;
+            font-size: 80px;
+            animation: sticker-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.5));
+            pointer-events: none;
+        }
+        
+        /* 3D Canvas Styles */
+        #three-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5; /* Below the scrolling content (z-index 30) */
+            pointer-events: none; /* Allows clicks to pass through to the HTML */
+            opacity: 0.3; /* Subtle 3D effect */
+        }
+        
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-pink': '#FF69B4', 
+                        'accent-gold': '#FFD700',
+                        'soft-purple': '#C39BEB',
+                        'gemini-blue': '#4285F4',
+                        'cake-brown': '#A0522D',
+                        'candle-red': '#E53E3E',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen relative">
+    
+    <!-- Background Animated Elements (New Dynamic Particle Field) -->
+    <div class="stars">
+        <div class="stars-layer stars-small"></div>
+        <div class="stars-layer stars-medium"></div>
+        <div class="stars-layer stars-large"></div>
+    </div>
+    
+    <!-- Three.js Container (New Feature: 3D Elements) -->
+    <div id="three-container"></div>
+
+    <!-- Page 1: COVER PAGE (The 'Login Screen' Analogy) -->
+    <div id="page-1" class="fixed inset-0 flex items-center justify-center z-50 p-8 text-white text-center">
+        <div class="max-w-md w-full p-6 bg-white/20 backdrop-blur-md rounded-3xl shadow-2xl">
+            <h1 class="text-4xl sm:text-5xl font-extrabold mb-4 leading-tight drop-shadow-lg text-primary-pink">
+                Happy Birthday Tanu Di!
+            </h1>
+            <p id="main-greeting-text" class="text-xl font-medium mb-8">
+                A little digital scrapbook of love, laughter, and appreciation, made just for your special day!
+            </p>
+            <button id="open-scrapbook-btn" onclick="openScrapbook()" class="bg-accent-gold hover:bg-yellow-500 text-white font-bold py-3 px-8 rounded-full shadow-xl transition duration-300 transform hover:scale-105 my-4 text-lg">
+                Open Scrapbook
+            </button>
+            <p class="text-sm font-semibold mt-4 text-gray-800">Made with love by Dev</p>
+        </div>
+    </div>
+
+    <!-- MAIN SCROLLING CONTENT AREA (The 'Instagram Feed' Analogy) -->
+    <div id="main-content-scroll" class="hidden w-full max-w-xl mx-auto space-y-8 py-12 z-30 relative">
+        
+        <!-- Heading and Poem Feature -->
+        <h2 class="text-3xl font-bold text-gray-100 text-center mb-6 drop-shadow-lg">Your Scrollable Scrapbook 💖</h2>
+
+        <!-- COUNTDOWN TIMER (Feature C: NEW) -->
+        <div class="scrapbook-card bg-purple-200/90 transform rotate-1 p-6 shadow-xl border-dashed border-2 border-soft-purple">
+            <h2 class="text-xl font-bold text-soft-purple mb-4 text-center">
+                🎂 The Next Birthday Countdown! 🎊
+            </h2>
+            <!-- NOTE: Please change the target date inside the 'updateCountdown' function in the script! -->
+            <div id="countdown" class="text-center text-gray-800 font-extrabold text-2xl space-y-2">
+                <p>Loading...</p>
+            </div>
+        </div>
+
+        <!-- MESSAGE CARD 1 (Original Page 2) - POEM GENERATOR (Gemini Feature 1) -->
+        <div id="message-card-1" class="scrapbook-card transform rotate-1 text-center">
+            <!-- Updated color to text-gray-900 (deep black) -->
+            <p id="poem-result-text" class="text-4xl calligraphic-text font-bold text-gray-900 mt-4">
+                🎉💖 Happy Birthday, Tanu Di! 💖🎉
+            </p>
+            <!-- Original secondary text color kept -->
+            <p id="poem-secondary-text" class="text-xl font-bold text-gray-700 mt-6 mb-4">🎂🎈 Many many happy returns of the day!! 🥳</p>
+            <button 
+                id="generate-poem-btn"
+                class="bg-gemini-blue hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 flex items-center justify-center disabled:opacity-50 mx-auto text-sm"
+                onclick="generatePoem()"
+            >
+                <span id="poem-button-content">✨ Generate New Poem</span>
+            </button>
+        </div>
+
+        <!-- MOOD-BASED GREETING GENERATOR (Gemini Feature 6) -->
+        <div id="mood-greeting-card" class="scrapbook-card transform -rotate-1 p-6 shadow-xl border-dashed border-2">
+            <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center justify-center">
+                💌 Mood-Based Greeting Generator
+            </h2>
+            <select id="greeting-mood" 
+                    class="w-full p-3 rounded-lg border-2 border-green-500/50 focus:border-green-500 focus:ring-0 text-gray-700 mb-4 bg-white">
+                <option value="Silly & Humorous">Silly & Humorous 😂</option>
+                <option value="Deeply Sentimental">Deeply Sentimental 🥹</option>
+                <option value="Witty & Sarcastic">Witty & Sarcastic 😉</option>
+                <option value="Motivational & Empowering">Motivational & Empowering 💪</option>
+            </select>
+            <textarea 
+                id="greeting-context" 
+                placeholder="Optional: Add a context (e.g., 'We just moved to a new city' or 'Joke about her terrible cooking')."
+                class="w-full p-3 h-12 rounded-lg border-2 border-green-500/50 focus:border-green-500 focus:ring-0 text-gray-700 mb-4"
+            ></textarea>
+            <button 
+                id="generate-greeting-btn"
+                class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 flex items-center justify-center disabled:opacity-50 mx-auto mb-4"
+                onclick="generateGreeting()"
+            >
+                <span id="greeting-button-content">✍️ Create Message</span>
+            </button>
+            <div id="greeting-results" class="text-left space-y-3 p-4 bg-white rounded-xl shadow-inner min-h-[50px]">
+                <p class="text-sm text-gray-500">Select a mood and tap '✍️ Create Message'!</p>
+            </div>
+        </div>
+
+        <!-- INTERACTIVE FEATURES SECTION (Cake, Pop, New Buttons) -->
+        <div class="scrapbook-card bg-white p-6 shadow-xl border-soft-purple border-solid border-4">
+            <h3 class="text-xl font-bold text-primary-pink mb-4">Interactive Celebrations! 🥳</h3>
+            
+            <!-- Feature Display Area -->
+            <div id="feature-display" class="w-full h-32 flex items-center justify-center mb-6">
+                <div id="cake-area" class="hidden transform transition duration-500 ease-in-out">
+                    <div class="text-9xl mb-2 relative">🎂</div>
+                    <div id="candle-container" class="flex justify-center space-x-2"></div>
+                    <div id="blown-out-message" class="text-xl text-gray-500 mt-2 hidden">✨ Wish Granted! ✨</div>
+                </div>
+                <div id="placeholder-message" class="text-lg text-gray-500 p-4 rounded-xl border border-gray-300">
+                    Click 'Show Cake' below to start the celebration!
+                </div>
+            </div>
+
+            <!-- Feature Buttons -->
+            <div class="grid grid-cols-3 gap-3">
+                <button 
+                    id="toggle-cake-btn"
+                    class="bg-cake-brown hover:bg-cake-brown/80 text-white font-bold py-2 px-3 rounded-full shadow-lg transition duration-300 flex items-center justify-center disabled:opacity-50 text-sm md:text-base"
+                    onclick="toggleCake()"
+                >
+                    <span id="cake-button-content">🍰 Show Cake</span>
+                </button>
+                <button 
+                    id="blow-candle-btn"
+                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-3 rounded-full shadow-lg transition duration-300 flex items-center justify-center disabled:opacity-50 text-sm md:text-base"
+                    onclick="blowOutCandles()"
+                    disabled
+                >
+                    <span id="candle-button-content">💨 Blow Candles</span>
+                </button>
+                <button 
+                    id="confetti-btn"
+                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 rounded-full shadow-lg transition duration-300 flex items-center justify-center disabled:opacity-50 text-sm md:text-base transform hover:scale-105"
+                    onclick="launchConfettiPop()"
+                >
+                    <span>🎉 Confetti</span>
+                </button>
+                <button 
+                    id="balloons-btn"
+                    class="bg-soft-purple hover:bg-soft-purple/80 text-white font-bold py-2 px-3 rounded-full shadow-lg transition duration-300 flex items-center justify-center disabled:opacity-50 text-sm md:text-base"
+                    onclick="launchBalloons(15)"
+                >
+                    <span>🎈 Balloons</span>
+                </button>
+                <button 
+                    id="sticker-btn"
+                    class="bg-accent-gold hover:bg-yellow-600 text-white font-bold py-2 px-3 rounded-full shadow-lg transition duration-300 flex items-center justify-center disabled:opacity-50 text-sm md:text-base transform hover:scale-105"
+                    onclick="dropSticker()"
+                >
+                    <span>⭐ Sticker</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- CATCH THE PRESENTS GAME (Feature B: NEW) -->
+        <div class="scrapbook-card bg-yellow-100/90 transform rotate-2 p-6 shadow-xl border-dashed border-2 border-accent-gold">
+            <h2 class="text-xl font-bold text-accent-gold mb-4 text-center">
+                🎁 Catch the Presents! Mini-Game 🕹️
+            </h2>
+            <div class="flex flex-col items-center">
+                <!-- Set initial canvas size, will be dynamically adjusted by JS -->
+                <canvas id="gameCanvas" width="380" height="300" class="w-full bg-white rounded-lg border border-gray-300 shadow-inner mb-4"></canvas>
+                <p id="gameScore" class="text-lg font-bold text-gray-800">Score: 0</p>
+                <p id="gameStatus" class="text-sm text-gray-600 mb-2">Use A/D or Left/Right arrows to move.</p>
+                <button 
+                    id="gameStartButton"
+                    onclick="initGame()"
+                    class="bg-accent-gold hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300"
+                >
+                    Start Game
+                </button>
+            </div>
+        </div>
+
+        <!-- MESSAGE CARD 3 (Original Page 4) -->
+        <div id="message-card-3" class="scrapbook-card transform rotate-2 text-left">
+            <h3 class="text-xl font-bold text-gemini-blue mb-4">A Note of Thanks:</h3>
+            <!-- Updated color to text-gray-900 (deep black) -->
+            <p class="text-2xl calligraphic-text text-gray-900">
+                💌 Thank you for always having my back 🙌 — through every happy 😊 and sad 😢 moment we’ve shared.
+            </p>
+        </div>
+
+        <!-- GIFT PLANNER SECTION (Gemini Feature 2) -->
+        <div class="scrapbook-card bg-gray-100 p-6 shadow-xl border-soft-purple border-dashed border-2">
+            <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center justify-center">
+                ✨ Personalized Gift Planner (Powered by Gemini)
+            </h2>
+            <input 
+                type="text" 
+                id="sister-interests" 
+                placeholder="Enter Tanu's interests (e.g., hiking, coffee, books)"
+                class="w-full p-3 rounded-lg border-2 border-soft-purple/50 focus:border-soft-purple focus:ring-0 text-gray-700 mb-4"
+            >
+            <button 
+                id="generate-gift-btn"
+                class="bg-soft-purple hover:bg-soft-purple/80 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 flex items-center justify-center disabled:opacity-50 mx-auto mb-4"
+                onclick="generateGiftIdeas()"
+            >
+                <span id="gift-button-content">🎁 Generate Gift Ideas</span>
+            </button>
+            <div id="gift-results" class="text-left space-y-3 p-4 bg-white rounded-xl shadow-inner min-h-[50px]">
+                <p class="text-sm text-gray-500">Tap '🎁 Generate Gift Ideas' after entering some interests!</p>
+            </div>
+        </div>
+
+        <!-- MEMORY EXTENDER SECTION (Gemini Feature 3) -->
+        <div id="memory-card-extender" class="scrapbook-card transform -rotate-1 p-6 shadow-xl border-dashed border-2">
+            <h2 class="text-xl font-bold text-gray-800 mb-3 flex items-center justify-center">
+                ✨ Memory Extender (Fun Story Generator)
+            </h2>
+            <textarea 
+                id="short-memory" 
+                placeholder="Write a short shared memory or inside joke here (e.g., 'That time we tried to bake and set off the smoke alarm')."
+                class="w-full p-3 h-20 rounded-lg border-2 border-pink-500/50 focus:border-pink-500 focus:ring-0 text-gray-700 mb-4"
+            ></textarea>
+            <button 
+                id="extend-memory-btn"
+                class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 flex items-center justify-center disabled:opacity-50 mx-auto mb-4"
+                onclick="extendMemory()"
+            >
+                <span id="memory-button-content">📖 Expand Memory</span>
+            </button>
+            <div id="memory-results" class="text-left space-y-3 p-4 bg-white rounded-xl shadow-inner min-h-[50px]">
+                <p class="text-sm text-gray-500">Tap '📖 Expand Memory' to turn a joke into a story idea!</p>
+            </div>
+        </div>
+        
+        <!-- SIGNATURE/DRAWING PAD SECTION (New Feature 4) -->
+        <div class="scrapbook-card bg-pink-100/70 transform -rotate-2 p-6 shadow-xl border-dashed border-2 border-primary-pink">
+            <h2 class="text-xl font-bold text-primary-pink mb-4 text-center">
+                ✍️ Leave Your Signature or Doodle
+            </h2>
+            <canvas id="signature-pad" width="400" height="150" class="w-full bg-white rounded-lg border border-gray-300 shadow-inner cursor-crosshair"></canvas>
+            <div class="flex justify-center space-x-4 mt-3">
+                <button 
+                    onclick="clearCanvas()"
+                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-1.5 px-3 rounded-full shadow-md transition duration-300 text-sm"
+                >
+                    Clear
+                </button>
+                <button 
+                    onclick="saveCanvas()"
+                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-1.5 px-3 rounded-full shadow-md transition duration-300 text-sm"
+                >
+                    (Mock Save)
+                </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-2 text-center">Use your mouse/finger to draw!</p>
+        </div>
+
+        <!-- AI IMAGE GENERATOR SECTION (New Feature 5) -->
+        <div id="ai-card-generator" class="scrapbook-card transform rotate-1 p-6 shadow-xl border-solid border-4 border-gemini-blue">
+            <h2 class="text-xl font-bold text-gemini-blue mb-3 flex items-center justify-center">
+                📸 AI-Generated Birthday Card (Imagen)
+            </h2>
+            <input 
+                type="text" 
+                id="image-prompt" 
+                placeholder="e.g., 'Tanu Di in a futuristic garden with robot butterflies, neon colors'"
+                class="w-full p-3 rounded-lg border-2 border-gemini-blue/50 focus:border-gemini-blue focus:ring-0 text-gray-700 mb-4"
+            >
+            <button 
+                id="generate-image-btn"
+                class="bg-gemini-blue hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 flex items-center justify-center disabled:opacity-50 mx-auto mb-4"
+                onclick="generateBirthdayCard()"
+            >
+                <span id="image-button-content">🖼️ Create Custom Card</span>
+            </button>
+            <div id="image-results" class="text-center p-2 bg-gray-200 rounded-xl shadow-inner min-h-[200px] flex items-center justify-center">
+                <p class="text-sm text-gray-500">Your unique image will appear here! (Tip: Be descriptive)</p>
+            </div>
+        </div>
+
+        <!-- MESSAGE CARD 4 (Original Page 5) -->
+        <div id="message-card-4" class="scrapbook-card transform -rotate-2 text-left">
+            <!-- Updated color to text-gray-900 (deep black) -->
+            <p class="text-2xl calligraphic-text mb-4 text-gray-900">
+                😆 Thanks for getting irritated by me (a lot 😜) but still loving me ❤️, supporting me 💪, and giving me advice 🧠 whenever I needed it.
+            </p>
+            <p class="text-xl font-bold text-primary-pink mt-4">
+                👭 You’re my elder sister, my forever partner in chaos and care 💕
+            </p>
+        </div>
+
+        <!-- SPOTIFY EMBED SECTION -->
+        <div class="scrapbook-card bg-white p-6 shadow-xl border-soft-purple border-solid border-4">
+            <h2 class="text-xl font-bold text-gray-800 mb-3">Your Birthday Song! 🎶</h2>
+            <div id="spotify-embed-container" class="w-full rounded-xl overflow-hidden shadow-xl">
+                <iframe id="spotify-player" 
+                    data-src="https://open.spotify.com/embed/track/0Jiaz0O4AqnJICa9PxHhaR?utm_source=generator" 
+                    src="https://open.spotify.com/embed/track/0Jiaz0O4AqnJICa9PxHhaR?utm_source=generator"
+                    width="100%" 
+                    height="352" 
+                    frameborder="0" 
+                    allowfullscreen="" 
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                    loading="lazy">
+                </iframe>
+            </div>
+        </div>
+
+        <!-- MESSAGE CARD 5 (Original Page 6 - Conclusion) -->
+        <div id="message-card-5" class="scrapbook-card transform rotate-1 flex flex-col justify-center items-center text-center">
+            <!-- Updated color to text-gray-900 (deep black) -->
+            <p class="text-3xl calligraphic-text font-bold text-gray-900">
+                Feeling super grateful today 🥰
+            </p>
+            <p class="text-xl font-semibold text-gray-700 mt-4">
+                🎉 Once again — Happyyy Birthday, Di!! 🎂💖🎁🎊
+            </p>
+        </div>
+
+    </div>
+
+    <!-- Audio element (hidden) -->
+    <audio id="audio-player" class="hidden"></audio>
+
+    <!-- JavaScript for Confetti and Gemini API Features -->
+    <script>
+        // --- Global Variables and DOM Elements ---
+        const apiKey = "";
+        
+        // References for the LLM features
+        const poemBtn = document.getElementById('generate-poem-btn');
+        const poemBtnContent = document.getElementById('poem-button-content');
+        const audioPlayer = document.getElementById('audio-player');
+        
+        // References for Layout/Scrapbook
+        const coverPage = document.getElementById('page-1');
+        const mainContentScroll = document.getElementById('main-content-scroll');
+        const body = document.body;
+        
+        // New references for Poem Fix
+        const poemResultText = document.getElementById('poem-result-text'); 
+        const poemSecondaryText = document.getElementById('poem-secondary-text');
+
+        // References for Cake/Gift UI
+        const cakeArea = document.getElementById('cake-area');
+        const candleContainer = document.getElementById('candle-container');
+        const blownOutMessage = document.getElementById('blown-out-message');
+        const toggleCakeBtn = document.getElementById('toggle-cake-btn');
+        const blowCandleBtn = document.getElementById('blow-candle-btn');
+        const placeholderMessage = document.getElementById('placeholder-message');
+        const generateGiftBtn = document.getElementById('generate-gift-btn');
+        const giftBtnContent = document.getElementById('gift-button-content');
+        const interestsInput = document.getElementById('sister-interests');
+        const giftResultsDiv = document.getElementById('gift-results');
+
+        // References for Memory Extender
+        const memoryTextarea = document.getElementById('short-memory');
+        const extendMemoryBtn = document.getElementById('extend-memory-btn');
+        const memoryBtnContent = document.getElementById('memory-button-content');
+        const memoryResultsDiv = document.getElementById('memory-results');
+
+        // References for Image Generator (Feature 5)
+        const imagePromptInput = document.getElementById('image-prompt');
+        const generateImageBtn = document.getElementById('generate-image-btn');
+        const imageBtnContent = document.getElementById('image-button-content');
+        const imageResultsDiv = document.getElementById('image-results');
+        
+        // References for Drawing Pad (Feature 4)
+        const canvas = document.getElementById('signature-pad');
+        const ctx = canvas ? canvas.getContext('2d') : null;
+        let isDrawing = false;
+        
+        // References for Mood Greeting (Feature 6)
+        const greetingMoodSelect = document.getElementById('greeting-mood');
+        const greetingContextTextarea = document.getElementById('greeting-context');
+        const generateGreetingBtn = document.getElementById('generate-greeting-btn');
+        const greetingBtnContent = document.getElementById('greeting-button-content');
+        const greetingResultsDiv = document.getElementById('greeting-results');
+
+        // References for Countdown (Feature C)
+        const countdownDiv = document.getElementById('countdown');
+        
+        // References for Game (Feature B)
+        const gameCanvas = document.getElementById('gameCanvas');
+        const gameCtx = gameCanvas ? gameCanvas.getContext('2d') : null;
+        const gameStartButton = document.getElementById('gameStartButton');
+        const gameScoreDisplay = document.getElementById('gameScore');
+        const gameStatusDisplay = document.getElementById('gameStatus');
+        
+        let game = {
+            isRunning: false,
+            score: 0,
+            player: { x: 0, width: 60, height: 20, speed: 5 },
+            presents: [],
+            presentInterval: null,
+            gameTimer: null
+        };
+
+
+        // THREE.js global variables
+        let scene, camera, renderer;
+        let cubes = [];
+        let mouseX = 0, mouseY = 0;
+        let targetRotationX = 0, targetRotationY = 0;
+        const autoRotationSpeed = 0.0005;
+
+
+        let cakeState = { shown: false, lit: false };
+
+        // Initialize Tone.js Synth for sound effects
+        let synth;
+        try {
+            // Using a poly-synth for a richer, short tone
+            synth = new Tone.PolySynth(Tone.MembraneSynth, {
+                volume: -10,
+                oscillator: { type: "square" },
+                envelope: { attack: 0.005, decay: 0.1, sustain: 0.01, release: 0.05 }
+            }).toDestination();
+        } catch (e) {
+            console.warn("Tone.js initialization failed. Audio features disabled.", e);
+        }
+        
+        // --- THREE.js SETUP (Feature A: Enhanced) ---
+        
+        const initThreeJs = () => {
+            const container = document.getElementById('three-container');
+            if (!container) return;
+
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            
+            renderer = new THREE.WebGLRenderer({ alpha: true }); 
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 5); 
+            scene.add(ambientLight);
+            
+            const pointLight = new THREE.PointLight(0xffffff, 50, 100);
+            pointLight.position.set(5, 5, 5);
+            scene.add(pointLight);
+
+            // Create 10 floating, rotating objects
+            const geometry = new THREE.TorusGeometry(0.5, 0.2, 16, 100);
+            const colors = [0xFF69B4, 0xFFD700, 0xC39BEB, 0x4285F4];
+
+            for (let i = 0; i < 10; i++) {
+                const material = new THREE.MeshLambertMaterial({ 
+                    color: colors[i % colors.length], 
+                    transparent: true,
+                    opacity: 0.8 
+                });
+                const cube = new THREE.Mesh(geometry, material);
+                
+                cube.position.x = (Math.random() - 0.5) * 20;
+                cube.position.y = (Math.random() - 0.5) * 20;
+                cube.position.z = (Math.random() - 0.5) * 20;
+                
+                cube.userData.rotationSpeed = Math.random() * 0.01 + 0.005;
+                
+                scene.add(cube);
+                cubes.push(cube);
+            }
+
+            camera.position.z = 5;
+
+            // Mouse interaction for camera control
+            document.addEventListener('mousemove', onDocumentMouseMove);
+            window.addEventListener('resize', onWindowResizeThreeJs);
+
+            animateThreeJs();
+        };
+        
+        const onDocumentMouseMove = (event) => {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = (event.clientY / window.innerHeight) * 2 - 1;
+        };
+
+        const animateThreeJs = () => {
+            requestAnimationFrame(animateThreeJs);
+
+            // Update camera rotation based on mouse and auto-orbit
+            targetRotationY += (mouseX * 0.5 - targetRotationY) * 0.05;
+            targetRotationX += (mouseY * 0.5 - targetRotationX) * 0.05;
+            
+            camera.position.x = Math.sin(Date.now() * autoRotationSpeed) * 10;
+            camera.position.z = Math.cos(Date.now() * autoRotationSpeed) * 10;
+            camera.position.y = Math.sin(Date.now() * autoRotationSpeed / 2) * 5;
+
+            // Camera looking slightly offset by mouse
+            camera.lookAt(new THREE.Vector3(targetRotationY * 3, -targetRotationX * 3, 0));
+
+
+            cubes.forEach(cube => {
+                cube.rotation.x += cube.userData.rotationSpeed;
+                cube.rotation.y += cube.userData.rotationSpeed;
+                // Simple oscillating movement
+                cube.position.y = Math.sin(Date.now() * 0.001 + cube.position.x) * 0.5;
+            });
+            
+            renderer.render(scene, camera);
+        };
+
+        const onWindowResizeThreeJs = () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        };
+
+        // --- COUNTDOWN TIMER (Feature C) ---
+
+        const updateCountdown = () => {
+            // FIX 3: Set target date to October 8, 2025
+            const targetDate = new Date("October 8, 2025 00:00:00").getTime();
+            
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                countdownDiv.innerHTML = `<p class="text-primary-pink">HAPPY BIRTHDAY! 🎉 The celebration is ON!</p>`;
+                clearInterval(game.gameTimer);
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            countdownDiv.innerHTML = `
+                <div class="flex justify-center space-x-4">
+                    <div class="p-2 bg-soft-purple/20 rounded-md text-white">
+                        <span class="block text-4xl">${days}</span><span class="text-sm">DAYS</span>
+                    </div>
+                    <div class="p-2 bg-soft-purple/20 rounded-md text-white">
+                        <span class="block text-4xl">${hours}</span><span class="text-sm">HRS</span>
+                    </div>
+                    <div class="p-2 bg-soft-purple/20 rounded-md text-white">
+                        <span class="block text-4xl">${minutes}</span><span class="text-sm">MIN</span>
+                    </div>
+                    <div class="p-2 bg-soft-purple/20 rounded-md text-white">
+                        <span class="block text-4xl">${seconds}</span><span class="text-sm">SEC</span>
+                    </div>
+                </div>
+                <p class="text-xs font-normal text-gray-700 mt-2">Time until the next big celebration!</p>
+            `;
+        };
+        
+        // --- CATCH THE PRESENTS GAME (Feature B) ---
+
+        function initGame() {
+            if (!gameCtx) return;
+            
+            game.isRunning = true;
+            game.score = 0;
+            game.presents = [];
+            game.player.x = (gameCanvas.width / 2) - (game.player.width / 2);
+            
+            gameStartButton.disabled = true;
+            gameStatusDisplay.textContent = "Catch as many as you can! (1 miss and it's over!)";
+            gameScoreDisplay.textContent = `Score: ${game.score}`;
+
+            clearInterval(game.presentInterval);
+            clearInterval(game.gameTimer);
+
+            game.presentInterval = setInterval(createPresent, 1000);
+            game.gameTimer = setInterval(gameLoop, 1000 / 60); // 60 FPS
+            
+             // Clear game state
+             gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+        };
+
+        function endGame() {
+            game.isRunning = false;
+            clearInterval(game.presentInterval);
+            clearInterval(game.gameTimer);
+            gameStatusDisplay.textContent = `Game Over! Final Score: ${game.score}`;
+            gameStartButton.disabled = false;
+            if (synth) {
+                Tone.start();
+                synth.triggerAttackRelease("C3", "4n"); // Low tone for game over
+            }
+        };
+
+        function createPresent() {
+            const emojis = ['🎁', '🎂', '💖', '🎈'];
+            game.presents.push({
+                x: Math.random() * (gameCanvas.width - 20),
+                y: 0,
+                emoji: emojis[Math.floor(Math.random() * emojis.length)],
+                size: 20,
+                speed: Math.random() * 2 + 1,
+            });
+        };
+
+        // FIX 2: This function is now correctly attached in window.onload for immediate responsiveness.
+        function handleGameInput(e) {
+            if (!game.isRunning) return;
+            
+            // Move left
+            if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+                game.player.x -= game.player.speed * 10;
+            }
+            // Move right
+            else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+                game.player.x += game.player.speed * 10;
+            }
+
+            // Boundary check
+            if (game.player.x < 0) game.player.x = 0;
+            if (game.player.x > gameCanvas.width - game.player.width) {
+                game.player.x = gameCanvas.width - game.player.width;
+            }
+        };
+
+        function updateGame() {
+            if (!game.isRunning) return;
+
+            // 1. Move presents and check collision
+            game.presents.forEach((present, index) => {
+                present.y += present.speed;
+
+                // Check for catch (collision)
+                if (
+                    present.y + present.size >= gameCanvas.height - game.player.height &&
+                    present.y + present.size <= gameCanvas.height &&
+                    present.x + present.size > game.player.x &&
+                    present.x < game.player.x + game.player.width
+                ) {
+                    game.score += 10;
+                    game.presents.splice(index, 1); // Remove caught present
+                    gameScoreDisplay.textContent = `Score: ${game.score}`;
+                    if (synth) {
+                        Tone.start();
+                        synth.triggerAttackRelease("D5", "64n");
+                    }
+                } 
+                // Check for missed present
+                else if (present.y > gameCanvas.height) {
+                    game.presents.splice(index, 1); // Remove missed present
+                    endGame(); // Game over on first miss
+                }
+            });
+        };
+
+        function drawGame() {
+            if (!gameCtx) return;
+
+            // Clear canvas
+            gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+            
+            // Draw player (The basket)
+            gameCtx.fillStyle = '#FF69B4'; // Primary Pink
+            gameCtx.fillRect(game.player.x, gameCanvas.height - game.player.height, game.player.width, game.player.height);
+            gameCtx.fillStyle = '#FFFFFF';
+            gameCtx.font = '14px Inter';
+            gameCtx.textAlign = 'center';
+            gameCtx.fillText('🧺', game.player.x + game.player.width / 2, gameCanvas.height - (game.player.height / 2) + 5);
+
+            // Draw presents
+            game.presents.forEach(present => {
+                gameCtx.font = `${present.size}px Arial`;
+                gameCtx.fillText(present.emoji, present.x, present.y);
+            });
+        };
+
+        function gameLoop() {
+            updateGame();
+            drawGame();
+        };
+
+
+        // --- Utility Functions (API, Confetti, etc.) ---
+        
+        const EMOJI_ASSETS = [
+            '🎉', '🎈', '🍾', '🥂', '🌸', '🌼', '✨', '💖', '🎁', '🎂'
+        ];
+        
+        const apiFetchWithBackoff = async (url, payload, maxRetries = 5) => {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.status === 429 && i < maxRetries - 1) {
+                        const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        continue;
+                    }
+                    
+                    if (!response.ok) {
+                        throw new Error(`API error: ${response.statusText}`);
+                    }
+
+                    return response.json();
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    if (i === maxRetries - 1) throw error;
+                }
+            }
+        };
+        
+        function openScrapbook() { 
+             body.classList.add('scrapbook-open');
+             setTimeout(() => {
+                 window.scrollTo(0, 0);
+             }, 700);
+        };
+        
+        function launchConfettiPop() { 
+            // Play a celebratory sound
+            if (synth) {
+                Tone.start();
+                synth.triggerAttackRelease(["C4", "E4", "G4"], "8n");
+            }
+
+            // Central starting position for the explosion
+            const startX = window.innerWidth / 2;
+            // Start the explosion slightly above the visible content (relative to the scroll position)
+            const startY = window.scrollY + window.innerHeight * 0.2; 
+
+            for (let i = 0; i < 150; i++) { 
+                setTimeout(() => {
+                    const popConfetti = document.createElement('div');
+                    popConfetti.classList.add('confetti');
+                    
+                    popConfetti.style.width = `${Math.random() * 8 + 4}px`; 
+                    popConfetti.style.height = popConfetti.style.width;
+                    
+                    const colors = ['#FFD700', '#FFFFFF', '#FF69B4', '#C39BEB', '#4FC3F7'];
+                    popConfetti.style.setProperty('--c', colors[Math.floor(Math.random() * colors.length)]);
+                    
+                    // Set starting position to the center point
+                    popConfetti.style.left = `${startX}px`;
+                    popConfetti.style.top = `${startY}px`;
+                    
+                    popConfetti.style.animation = 'none';
+                    
+                    // Calculate explosive projection direction (360 degrees)
+                    const angle = Math.random() * 360;
+                    const velocity = Math.random() * window.innerWidth * 0.8 + window.innerWidth * 0.2; // Wide, fast projection
+                    const xDir = Math.cos(angle * Math.PI / 180) * velocity;
+                    const yDir = Math.sin(angle * Math.PI / 180) * velocity; 
+
+                    // Use transition for the burst effect
+                    popConfetti.style.transform = `translate(0, 0)`;
+                    // Adjust the transition timing function for a dramatic burst (starts fast, slows down)
+                    popConfetti.style.transition = `transform ${Math.random() * 1.5 + 0.8}s cubic-bezier(0.1, 0.9, 0.4, 1.2), opacity 0.5s linear ${Math.random() * 1.0}s`;
+                    
+                    setTimeout(() => {
+                        popConfetti.style.transform = `translate(${xDir}px, ${yDir}px) rotateZ(${Math.random() * 720 + 360}deg)`;
+                        popConfetti.style.opacity = '0';
+                    }, 10);
+
+                    document.body.appendChild(popConfetti);
+
+                    setTimeout(() => {
+                        popConfetti.remove();
+                    }, 2500); 
+                }, i * 2); 
+            }
+        };
+
+        function dropSticker() { 
+            if (synth) {
+                Tone.start();
+                synth.triggerAttackRelease("A4", "32n");
+            }
+
+            const stickerEmojis = ['👑', '⭐', '🥳', '👯‍♀️', '🥂', '🍰'];
+            const sticker = document.createElement('div');
+            sticker.classList.add('sticker');
+            sticker.textContent = stickerEmojis[Math.floor(Math.random() * stickerEmojis.length)];
+            
+            const stickerSize = 80;
+            const margin = 20; 
+            const randomX = Math.random() * (window.innerWidth - stickerSize - 2 * margin) + margin;
+            const randomY = Math.random() * (window.innerHeight - stickerSize - 2 * margin) + margin;
+
+            sticker.style.left = `${randomX}px`; 
+            sticker.style.top = `${randomY}px`;
+
+            document.body.appendChild(sticker);
+
+            setTimeout(() => {
+                sticker.style.opacity = '0';
+                sticker.style.transition = 'opacity 0.5s';
+                setTimeout(() => sticker.remove(), 500);
+            }, 3000);
+        };
+
+        function launchBalloons(count) { 
+            const balloonEmojis = ['🎈', '💖', '🎁', '🎂'];
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const balloon = document.createElement('div');
+                    balloon.classList.add('balloon');
+                    balloon.textContent = balloonEmojis[Math.floor(Math.random() * balloonEmojis.length)];
+                    
+                    balloon.style.left = `${Math.random() * 80 + 10}vw`;
+                    
+                    balloon.style.setProperty('--d', `${Math.random() * 10 + 5}s`);
+                    balloon.style.setProperty('--r', `${Math.random() * 10 - 5}deg`); 
+
+                    document.body.appendChild(balloon);
+
+                    setTimeout(() => {
+                        balloon.remove();
+                    }, parseFloat(balloon.style.getPropertyValue('--d')) * 1000);
+                }, i * 150);
+            }
+        };
+
+        function createConfetti(isPop = false) { 
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            
+            const assetType = Math.random();
+            if (assetType < 0.3 && !isPop) { 
+                confetti.textContent = EMOJI_ASSETS[Math.floor(Math.random() * EMOJI_ASSETS.length)];
+                confetti.style.backgroundColor = 'transparent';
+                confetti.style.width = '24px';
+                confetti.style.height = '24px';
+            } else { 
+                const colors = ['#FF69B4', '#FFD700', '#C39BEB', '#38BDF8', '#FFFFFF']; 
+                confetti.style.setProperty('--c', colors[Math.floor(Math.random() * colors.length)]);
+            }
+            
+            confetti.style.setProperty('--x', `${Math.random() * 500 - 250}px`);
+            confetti.style.setProperty('--r', `${Math.random() * 360}deg`);     
+            confetti.style.setProperty('--d', `${Math.random() * 4 + 3}s`);
+            
+            confetti.style.left = `${Math.random() * 100}vw`; 
+            confetti.style.top = `${-10 - (Math.random() * 20)}px`;
+
+            document.body.appendChild(confetti);
+
+            setTimeout(() => {
+                confetti.remove();
+            }, parseFloat(confetti.style.getPropertyValue('--d')) * 1000);
+        };
+        
+        function createCandles() {
+            const candleCount = 3; 
+            candleContainer.innerHTML = '';
+            for (let i = 0; i < candleCount; i++) {
+                const candleWrapper = document.createElement('div');
+                candleWrapper.className = 'relative w-4 h-8 bg-candle-red rounded-t-sm shadow-md';
+                candleWrapper.innerHTML = '<div class="flame" data-lit="true"></div>';
+                candleContainer.appendChild(candleWrapper);
+            }
+        };
+
+        function toggleCake() {
+            if (!cakeState.shown) {
+                placeholderMessage.classList.add('hidden');
+                cakeArea.classList.remove('hidden');
+                toggleCakeBtn.innerHTML = '<span id="cake-button-content">🍰 Hide Cake</span>';
+                
+                createCandles();
+                
+                cakeState.shown = true;
+                cakeState.lit = true;
+                blowCandleBtn.disabled = false;
+            } else {
+                cakeArea.classList.add('hidden');
+                placeholderMessage.classList.remove('hidden');
+                blownOutMessage.classList.add('hidden');
+                toggleCakeBtn.innerHTML = '<span id="cake-button-content">🍰 Show Cake</span>';
+                
+                cakeState.shown = false;
+                cakeState.lit = false;
+                blowCandleBtn.disabled = true;
+            }
+        };
+
+        function blowOutCandles() {
+            if (cakeState.shown && cakeState.lit) {
+                const flames = candleContainer.querySelectorAll('.flame');
+                flames.forEach(flame => {
+                    flame.style.opacity = '0';
+                    flame.style.boxShadow = 'none';
+                    flame.style.animation = 'none';
+                    flame.textContent = '💨';
+                    flame.style.fontSize = '24px';
+                    flame.style.top = '-10px';
+                });
+                
+                blownOutMessage.classList.remove('hidden');
+                blowCandleBtn.disabled = true;
+                blowCandleBtn.textContent = 'Wish Made!';
+                cakeState.lit = false;
+            }
+        };
+
+        function generatePoem() {
+            if (!poemResultText) {
+                console.error("Poem result element not found.");
+                return; 
+            }
+            
+            poemBtn.disabled = true;
+            poemBtnContent.innerHTML = '<div class="spinner"></div>';
+            
+            const model = 'gemini-2.5-flash-preview-05-20';
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+            const systemPrompt = "You are a warm, cheerful, and creative poet writing a birthday poem for a beloved sister. Keep the poem short, approximately four lines, and focus on themes of joy, laughter, and sibling love. Do not include a title or introduction, just the poem lines. Format the response as a single string with HTML line breaks (<br>) between lines.";
+            const userQuery = "Write a happy birthday poem for a wonderful sister named Tanu.";
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+            };
+
+            try {
+                // Using synchronous try/catch logic, but API call is async. Wrapped in a temporary function to maintain structure.
+                (async () => {
+                    const result = await apiFetchWithBackoff(apiUrl, payload);
+                    const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    
+                    if (generatedText) {
+                        poemResultText.innerHTML = generatedText.trim().replace(/\n/g, '<br>'); 
+                        poemSecondaryText.textContent = "A custom message, just for you!";
+                        
+                        if (synth) {
+                            Tone.start();
+                            synth.triggerAttackRelease("C4", "8n");
+                        }
+                        
+                    } else {
+                        poemResultText.textContent = "Oops! Couldn't generate a poem right now.";
+                    }
+                })().catch(error => {
+                    console.error("Gemini Poem Generation Failed:", error);
+                    poemResultText.textContent = "Error generating the poem. Please check the console for details.";
+                }).finally(() => {
+                    poemBtnContent.textContent = '✨ Generate New Poem';
+                    poemBtn.disabled = false;
+                });
+
+            } catch (error) {
+                // This catch block will only catch synchronous errors before the async IIFE runs
+                console.error("Synchronous error during poem generation setup:", error);
+                poemBtnContent.textContent = '✨ Generate New Poem';
+                poemBtn.disabled = false;
+            }
+        };
+        
+        // --- LLM Gift Idea Generation Feature (Gemini Feature 2) ---
+
+        const giftSchema = {
+            type: "ARRAY",
+            items: {
+                type: "OBJECT",
+                properties: {
+                    "idea": { "type": "STRING", "description": "A concise, creative name for the gift idea." },
+                    "description": { "type": "STRING", "description": "A short, engaging explanation of the gift." },
+                    "category": { "type": "STRING", "description": "A category like 'Experience', 'DIY', or 'Tech'." }
+                },
+                "propertyOrdering": ["idea", "description", "category"]
+            }
+        };
+
+        function generateGiftIdeas() {
+            const interests = interestsInput.value.trim();
+            if (!interests) {
+                giftResultsDiv.innerHTML = '<p class="text-sm text-red-500">Please enter at least one interest to generate ideas!</p>';
+                return;
+            }
+
+            generateGiftBtn.disabled = true;
+            giftBtnContent.innerHTML = '<div class="spinner"></div>';
+            giftResultsDiv.innerHTML = '<p class="text-center text-gray-500">Generating personalized ideas...</p>';
+
+            const model = 'gemini-2.5-flash-preview-05-20';
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+            const systemPrompt = "You are a creative and thoughtful gift curator. Generate 3 unique and personalized gift ideas for a sister based on her specified interests. Respond only with a JSON array conforming to the provided schema.";
+            const userQuery = `Sister's interests: ${interests}. Generate 3 gift ideas for Tanu.`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: giftSchema
+                }
+            };
+
+            (async () => {
+                try {
+                    const result = await apiFetchWithBackoff(apiUrl, payload);
+                    const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    
+                    if (jsonText) {
+                        const giftIdeas = JSON.parse(jsonText);
+                        displayGiftIdeas(giftIdeas);
+                    } else {
+                        giftResultsDiv.innerHTML = '<p class="text-sm text-red-500">Could not generate gift ideas. Try refining the interests.</p>';
+                    }
+                } catch (error) {
+                    console.error("Gemini Gift Generation Failed:", error);
+                    giftResultsDiv.innerHTML = '<p class="text-sm text-red-500">Error generating gifts. See console for details.</p>';
+                } finally {
+                    giftBtnContent.textContent = '🎁 Generate Gift Ideas';
+                    generateGiftBtn.disabled = false;
+                }
+            })();
+        };
+
+        function displayGiftIdeas(ideas) {
+            giftResultsDiv.innerHTML = '';
+            
+            if (ideas.length === 0) {
+                 giftResultsDiv.innerHTML = '<p class="text-sm text-gray-500">No specific ideas generated. Try different interests!</p>';
+                 return;
+            }
+
+            ideas.forEach((item, index) => {
+                const idea = item.idea || "Untitled Idea";
+                const description = item.description || "No description provided.";
+                const category = item.category || "General";
+
+                const ideaHtml = `
+                    <div class="p-3 border-l-4 border-soft-purple bg-white rounded-lg shadow-sm">
+                        <h4 class="font-semibold text-gray-800 text-lg">${index + 1}. ${idea}</h4>
+                        <p class="text-sm text-gray-600 mt-1">${description}</p>
+                        <span class="text-xs font-medium text-soft-purple bg-soft-purple/10 px-2 py-0.5 rounded-full mt-2 inline-block">${category}</span>
+                    </div>
+                `;
+                giftResultsDiv.innerHTML += ideaHtml;
+            });
+        };
+        
+        // --- LLM Memory Extender Feature (Gemini Feature 3) ---
+
+        function extendMemory() {
+            const memory = memoryTextarea.value.trim();
+            if (!memory) {
+                memoryResultsDiv.innerHTML = '<p class="text-sm text-red-500">Please enter a memory or joke to expand!</p>';
+                return;
+            }
+
+            extendMemoryBtn.disabled = true;
+            memoryBtnContent.innerHTML = '<div class="spinner"></div>';
+            memoryResultsDiv.innerHTML = '<p class="text-center text-gray-500">Expanding memory into a story snippet...</p>';
+
+            const model = 'gemini-2.5-flash-preview-05-20';
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+            const systemPrompt = "You are a creative writer and storyteller. Take the user's short memory or joke and expand it into a short, fun, four-sentence story or anecdote. Write it in a warm, nostalgic, and humorous tone, appropriate for a sister's birthday.";
+            const userQuery = `Expand this memory into a short, heartwarming story for my sister: "${memory}"`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+            };
+
+            (async () => {
+                try {
+                    const result = await apiFetchWithBackoff(apiUrl, payload);
+                    const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    
+                    if (generatedText) {
+                        // Use a div for the generated text, preserving line breaks
+                        memoryResultsDiv.innerHTML = `<div class="text-gray-700 whitespace-pre-wrap">${generatedText.trim()}</div>`;
+                        if (synth) {
+                            Tone.start();
+                            synth.triggerAttackRelease("E4", "8n");
+                        }
+                    } else {
+                        memoryResultsDiv.innerHTML = '<p class="text-sm text-red-500">Could not expand memory. Try a different detail!</p>';
+                    }
+                } catch (error) {
+                    console.error("Gemini Memory Extender Failed:", error);
+                    memoryResultsDiv.innerHTML = '<p class="text-sm text-red-500">Error extending memory. See console for details.</p>';
+                } finally {
+                    memoryBtnContent.textContent = '📖 Expand Memory';
+                    extendMemoryBtn.disabled = false;
+                }
+            })();
+        };
+        
+        // --- LLM Mood-Based Greeting Generator (Gemini Feature 6: NEW) ---
+        
+        function generateGreeting() {
+            const mood = greetingMoodSelect.value;
+            const context = greetingContextTextarea.value.trim();
+
+            generateGreetingBtn.disabled = true;
+            greetingBtnContent.innerHTML = '<div class="spinner"></div>';
+            greetingResultsDiv.innerHTML = '<p class="text-center text-gray-500">Crafting the perfect message...</p>';
+
+            const model = 'gemini-2.5-flash-preview-05-20';
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+            let systemPrompt = `You are a creative writer crafting a birthday message for a sister named Tanu. The message must adopt a **${mood}** tone. Keep the message concise, around 3-5 sentences long.`;
+            
+            let userQuery = `Write the birthday greeting for Tanu in a ${mood} tone.`;
+
+            if (context) {
+                userQuery += ` The message should also incorporate the following context or inside joke: "${context}"`;
+            }
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+            };
+
+            (async () => {
+                try {
+                    const result = await apiFetchWithBackoff(apiUrl, payload);
+                    const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    
+                    if (generatedText) {
+                        greetingResultsDiv.innerHTML = `<div class="text-gray-700 whitespace-pre-wrap">${generatedText.trim()}</div>`;
+                        if (synth) {
+                            Tone.start();
+                            synth.triggerAttackRelease("G4", "8n");
+                        }
+                    } else {
+                        greetingResultsDiv.innerHTML = '<p class="text-sm text-red-500">Could not generate the greeting. Try simplifying the context.</p>';
+                    }
+                } catch (error) {
+                    console.error("Gemini Greeting Generation Failed:", error);
+                    greetingResultsDiv.innerHTML = '<p class="text-sm text-red-500">Error generating greeting. See console for details.</p>';
+                } finally {
+                    greetingBtnContent.textContent = '✍️ Create Message';
+                    generateGreetingBtn.disabled = false;
+                }
+            })();
+        };
+
+
+        // --- LLM Image Generation Feature (Gemini Feature 5) ---
+
+        function generateBirthdayCard() {
+            const prompt = imagePromptInput.value.trim();
+            if (!prompt) {
+                imageResultsDiv.innerHTML = '<p class="text-sm text-red-500">Please enter a prompt to create a card!</p>';
+                return;
+            }
+
+            generateImageBtn.disabled = true;
+            imageBtnContent.innerHTML = '<div class="spinner"></div>';
+            imageResultsDiv.innerHTML = '<p class="text-center text-gray-500">Generating unique artwork (This may take a moment)...</p>';
+
+            const model = 'imagen-3.0-generate-002';
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:predict?key=${apiKey}`;
+
+            const payload = { 
+                instances: [{ prompt: `High quality birthday card for my sister Tanu, featuring ${prompt}, cinematic style, vibrant colors.` }], 
+                parameters: { 
+                    "sampleCount": 1,
+                    "outputMimeType": "image/png"
+                } 
+            };
+
+            (async () => {
+                try {
+                    const result = await apiFetchWithBackoff(apiUrl, payload);
+                    const base64Data = result?.predictions?.[0]?.bytesBase64Encoded;
+                    
+                    if (base64Data) {
+                        const imageUrl = `data:image/png;base64,${base64Data}`;
+                        imageResultsDiv.innerHTML = `<img src="${imageUrl}" alt="AI Generated Birthday Card" class="w-full h-auto rounded-lg shadow-lg">`;
+                    } else {
+                        imageResultsDiv.innerHTML = '<p class="text-sm text-red-500">Image generation failed. Please try a different prompt.</p>';
+                    }
+                } catch (error) {
+                    console.error("Imagen Generation Failed:", error);
+                    imageResultsDiv.innerHTML = '<p class="text-sm text-red-500">Error generating image. See console for details.</p>';
+                } finally {
+                    imageBtnContent.textContent = '🖼️ Create Custom Card';
+                    generateImageBtn.disabled = false;
+                }
+            })();
+        };
+
+
+        // --- Drawing Pad Logic (Feature 4) ---
+        
+        // Function to adjust canvas size for responsiveness
+        function resizeCanvas() {
+            if (!canvas || !ctx) return;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            
+            // FIX 1: Add check for zero width to prevent IndexSizeError
+            if (rect.width === 0) {
+                console.warn("Canvas container width is zero, skipping resize.");
+                return;
+            }
+            
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+            // Resize canvas to fit container
+            canvas.width = rect.width;
+            canvas.height = 150; 
+            
+            // Re-apply drawing settings
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#FF69B4';
+
+            ctx.putImageData(imageData, 0, 0); 
+        };
+
+        function startDrawing(e) {
+            if (!ctx) return;
+            isDrawing = true;
+            const { x, y } = getCoords(e);
+            ctx.beginPath();
+            ctx.moveTo(x, y); 
+        };
+
+        function stopDrawing() {
+            if (!ctx) return;
+            isDrawing = false;
+            ctx.closePath(); // Close the path
+        };
+
+        function getCoords(e) {
+            const rect = canvas.getBoundingClientRect();
+            // Handle touch events
+            if (e.touches && e.touches.length > 0) {
+                return {
+                    x: e.touches[0].clientX - rect.left,
+                    y: e.touches[0].clientY - rect.top,
+                };
+            }
+            // Handle mouse events
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top,
+            };
+        };
+
+        function draw(e) {
+            if (!isDrawing || !ctx) return;
+
+            const { x, y } = getCoords(e);
+            
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#FF69B4'; // Primary Pink color for the signature
+
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            
+            // To make the line continuous, we re-use the current point for the next segment's start.
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        };
+
+        function clearCanvas() {
+            if (ctx) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        };
+
+        // Mock save function
+        function saveCanvas() {
+            // In a real app, you'd save canvas.toDataURL() here (e.g., to Firestore).
+            console.log("Mock saving the signature/doodle data...");
+            if (synth) {
+                Tone.start();
+                synth.triggerAttackRelease("G5", "32n");
+            }
+        };
+
+        
+
+
+        // --- Initial Load ---
+
+        window.onload = () => {
+            // Initialize 3D elements
+            if (typeof THREE !== 'undefined') {
+                 initThreeJs();
+            } else {
+                 console.warn("THREE.js library not loaded. 3D features disabled.");
+            }
+            
+            // Initialize Countdown
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+
+            // Initialize Game Canvas resizing for responsiveness
+            if (gameCanvas) {
+                const resizeGameCanvas = () => {
+                    gameCanvas.width = gameCanvas.parentElement.offsetWidth - 32;
+                    drawGame();
+                };
+                resizeGameCanvas();
+                window.addEventListener('resize', resizeGameCanvas);
+                // Draw initial game state
+                drawGame(); 
+            }
+            
+            // Initial Drawing Pad setup
+            if (canvas) {
+                // Attach drawing listeners
+                canvas.addEventListener('mousedown', startDrawing);
+                canvas.addEventListener('mouseup', stopDrawing);
+                canvas.addEventListener('mousemove', draw);
+                canvas.addEventListener('mouseout', stopDrawing); 
+                canvas.addEventListener('touchstart', startDrawing);
+                canvas.addEventListener('touchend', stopDrawing);
+                canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); });
+                
+                // Call resizeCanvas after initial attachment
+                window.addEventListener('resize', resizeCanvas);
+                resizeCanvas(); 
+            }
+            
+            // Attach Game Input Listeners here so they work immediately (Fix 2)
+            document.addEventListener('keydown', handleGameInput);
+
+            // Initial burst of confetti to start the celebratory mood
+            for (let i = 0; i < 100; i++) {
+                setTimeout(createConfetti, i * 15);
+            }
+
+            // Keep the confetti going subtly
+            setInterval(() => {
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(createConfetti, i * 15);
+                }
+            }, 3000); 
+        };
+    </script>
+</body>
+</html>
